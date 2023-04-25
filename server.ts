@@ -1,19 +1,59 @@
 const PORT = process.env.PORT ?? 8000
-import express from 'express';
+import express, { response } from 'express';
 const app = express()
 import { Request, Response } from 'express';
+import cors from 'cors';
 import pool from './db';
+import { v4 as uuidv4 } from 'uuid';
+import bodyParser from 'body-parser';
 
+app.use(cors())
+app.use(bodyParser.json());
+//OR
+//app.use(express.json())
 
 //get all todos
 app.get('/todos', async(req: Request, res: Response) => {
+    const userEmail = 'john@example.com'
+
     try {
-        const todos = await pool.query('SELECT * FROM todo');
+        const todos = await pool.query('SELECT * FROM todo WHERE user_email = $1', [userEmail] );
         res.json(todos.rows);
     } catch(err) {
         console.error(err);
         res.status(500).json({ message: 'Server Error' });
     }
 });
+
+//create a new todo
+app.post('/todos', async (req: Request, res: Response) => {
+    try {
+      const { user_email, title, progress, date } = req.body;
+      const id = uuidv4(); // generate a unique id using uuid
+  
+      await pool.query(
+        `INSERT INTO todo(id, user_email, title, progress, date)
+        VALUES($1, $2, $3, $4, $5)`,
+        [id, user_email, title, progress, date]
+      );
+  
+      res.status(201).json({ message: 'Todo created successfully', id });
+    } catch (err: any) {
+      console.error(err);
+      if (err.code === '23505') {
+        // unique constraint violation
+        res.status(400).json({ message: 'A todo with that title already exists' });
+      } else {
+        res.status(500).json({ message: 'Server Error' });
+      }
+    }
+});
+
+
+//edit a todo
+
+
+//delete a todo
+
 
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`))
