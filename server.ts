@@ -49,9 +49,26 @@ app.post('/todos', async (req: Request, res: Response) => {
     }
 });
 
-
 //edit a todo
+app.put('/todos/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { user_email, title, progress, date } = req.body;
 
+    try {
+        const editToDo = await pool.query('UPDATE todo SET user_email = $1, title = $2, progress = $3, date = $4 WHERE id = $5;',
+        [user_email, title, progress, date, id]);
+
+        if (editToDo.rowCount === 0) {
+            return res.status(404).json({ message: 'Todo not found' });
+        }
+
+        res.status(200).json({ message: 'Todo updated successfully' });
+        
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
 
 //delete a todo
 
