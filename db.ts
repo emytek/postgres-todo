@@ -8,7 +8,7 @@ const pool = new Pool({
     port: process.env.DBPORT,
     database: 'todo',
 })
-console.log(process.env.DBPORT, "*****")
+
 // const pool = new Pool({
 //     user: 'postgres',
 //     password: 'jacksontech',
