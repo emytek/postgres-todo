@@ -13,17 +13,25 @@ app.use(bodyParser.json());
 //app.use(express.json())
 
 //get all todos
-app.get('/todos', async(req: Request, res: Response) => {
-    const userEmail = 'john@example.com'
-
+app.get('/todos', async (req: Request, res: Response) => {
+    const userEmail = 'john@example.com';
+  
     try {
-        const todos = await pool.query('SELECT * FROM todo WHERE user_email = $1', [userEmail] );
-        res.json(todos.rows);
-    } catch(err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server Error' });
+      const todos = await pool.query('SELECT * FROM todo WHERE user_email = $1', [userEmail]);
+      res.json(todos.rows);
+    } catch (err: any) {
+      console.error(err);
+  
+      // check if the error is a database error
+      if (err.code === '23505') {
+        return res.status(400).json({ message: 'Duplicate todo item' });
+      }
+  
+      // handle other types of errors
+      res.status(500).json({ message: 'Server Error' });
     }
 });
+  
 
 //create a new todo
 app.post('/todos', async (req: Request, res: Response) => {
@@ -71,6 +79,23 @@ app.put('/todos/:id', async (req: Request, res: Response) => {
 });
 
 //delete a todo
+app.delete('/todos/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+  
+    try {
+      const deleteToDo = await pool.query('DELETE FROM todo WHERE id = $1;', [id]);
+  
+      if (deleteToDo.rowCount === 0) {
+        res.status(404).json({ message: 'Todo not found' });
+      } else {
+        res.status(200).json({ message: 'Todo deleted successfully' });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server Error' });
+    }
+});
+  
 
 
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`))
