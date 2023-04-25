@@ -31,6 +31,33 @@ app.get('/todos', async (req: Request, res: Response) => {
       res.status(500).json({ message: 'Server Error' });
     }
 });
+
+//get single todo
+app.get('/todos/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userEmail = 'john@example.com';
+  
+    try {
+      const todo = await pool.query('SELECT * FROM todo WHERE id = $1 AND user_email = $2', [id, userEmail]);
+  
+      // check if a todo was found
+      if (todo.rows.length === 0) {
+        return res.status(404).json({ message: 'Todo not found' });
+      }
+  
+      res.json(todo.rows[0]);
+    } catch (err) {
+      console.error(err);
+  
+      // check if the error is a database error
+      if (err.code === '23505') {
+        return res.status(400).json({ message: 'Duplicate todo item' });
+      }
+  
+      // handle other types of errors
+      res.status(500).json({ message: 'Server Error' });
+    }
+  });
   
 
 //create a new todo
