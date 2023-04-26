@@ -29,15 +29,14 @@
 ### Backend: Database
 
 * PostgreSQL needs to be installed and running - I started it from my Windows 10 PostgreSQL 12 dropdown option 'SQL shell (psql)'
-* Postman used to test the backend before frontend was available
-* pgadmin was used as an interface to access and manage my postgres database
+* Pgadmin was used as an interface to access and manage my postgres database
 * A todo database was created and todo and users tables were used to organise and manage data 
 
 ### Backend: Server
 
 * Node and Express was used to get the server running
 * Set up a basic express server
-* Implement and test the routes
+* Implement and test the routes using Postman 
 
 ### Implementation: User Management System
 
@@ -153,6 +152,11 @@ const validationRules = [
 ## :cool: Features 
 
 * All data stored in PostgreSQL database that can also be viewed and changed from the PostgreSQL shell (psql)
+* The API supports the following requests:
+* List all todos
+* Get a single todo by its id
+* Update an existing todo by its id
+* Delete a todo by its id
 * Authentication - Users can register, login and manage their own todos
 * Error handling / Input validation and tested use cases
 * CRUD functionalities: Create, Read, Update and Delete todo direct from the server.
@@ -168,7 +172,5 @@ const validationRules = [
 * [js-beautify for VS Code](https://marketplace.visualstudio.com/items?itemName=HookyQR.beautify)
 
 ## :file_folder: License
-
-* This project is licensed under the terms of the MIT license.
 
 ## :envelope: Contact
