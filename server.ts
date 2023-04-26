@@ -136,8 +136,8 @@ app.delete('/todos/:id', async (req: Request, res: Response) => {
 const validationRules = [
     body('email').isEmail(),
     body('password').isLength({ min: 6 }),
-  ];
-  
+];
+
 //signup
   app.post('/signup', validationRules, async (req: Request, res: Response) => {
     // Check for validation errors
