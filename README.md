@@ -44,8 +44,8 @@
 * This is User-based: Authenticated users have access to their own todos.
 ## :camera: Screenshots
 
-![Backend screenshot](./img/postgresql.png)
-![Frontend & backend screenshot](./img/todos.png)
+![Backend screenshot](./img/1todo.png)
+![Frontend & backend screenshot](./img/2todo.png)
 
 ## :signal_strength: Technologies - Backend
 
