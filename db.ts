@@ -9,12 +9,5 @@ const pool = new Pool({
     database: 'todo',
 })
 
-// const pool = new Pool({
-//     user: 'postgres',
-//     password: 'jacksontech',
-//     host: 'localhost',
-//     port: 5432,
-//     database: 'todo',
-// })
 
 export default pool;
