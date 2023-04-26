@@ -133,28 +133,12 @@ app.delete('/todos/:id', async (req: Request, res: Response) => {
 
   
 //AUTHENTICATION
-// app.post('/signup', async (req: Request, res: Response) => {
-//     const { email, password } = req.body;
-//     const salt = bcrypt.genSaltSync(10)
-//     const hashedPassword = bcrypt.hashSync(password, salt)
-  
-//     try {
-//       const signUp = await pool.query(`INSERT INTO users (email, hashed_password) VALUES($1, $2)`, 
-//       [email, hashedPassword]);
-  
-//       const token = jwt.sign({ email }, 'secret', { expiresIn: '1hr'})
-//       res.json({ email, token })
-//     } catch (err) {
-//       console.error(err);
-//       res.status(500).json({ message: 'Server Error' });
-//     }
-// });
-// Validation rules for the request body
 const validationRules = [
     body('email').isEmail(),
     body('password').isLength({ min: 6 }),
   ];
   
+//signup
   app.post('/signup', validationRules, async (req: Request, res: Response) => {
     // Check for validation errors
     const errors = validationResult(req);
@@ -188,6 +172,40 @@ const validationRules = [
       res.status(500).json({ message: 'Server Error' });
     }
 });
+
+//login
+app.post('/login',
+  body('email').isEmail().withMessage('Email is not valid'),
+  body('password').notEmpty().withMessage('Password is required'),
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body;
+  
+    try {
+      const users = await pool.query('SELECT * FROM users WHERE email = $1;', [email]);
+  
+      if(!users.rows.length) {
+        return res.status(401).json({ detail: 'User does not exist' });
+      }
+
+      const success = await bcrypt.compare(password, users.rows[0].hashed_password);
+      if(!success) {
+        return res.status(401).json({ detail: 'Incorrect password' });
+      }
+
+      const token = jwt.sign({ email }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+
+      res.json({ email: users.rows[0].email, token });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server Error' });
+    }
+});
+
 
 
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`))
